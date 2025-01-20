@@ -133,7 +133,7 @@ void PackedRow::get_reason(
             const uint32_t var = col_to_var[col];
             if (var == prop.var()) {
                 tmp_clause.push_back(prop);
-                std::swap(tmp_clause[0], tmp_clause.back());
+                //std::swap(tmp_clause[0], tmp_clause.back());
             } else {
                 const bool val_bool = tmp_col2[col];
                 tmp_clause.push_back(Lit(var, val_bool));

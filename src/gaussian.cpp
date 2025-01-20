@@ -150,9 +150,10 @@ void EGaussian::select_columnorder() {
     var_to_col.resize(largest_used_var + 1);
 
 
-    ColSorter c(solver);
-    std::sort(vars_needed.begin(), vars_needed.end(),c);
-    c.finishup();
+    //ColSorter c(solver);
+    //std::sort(vars_needed.begin(), vars_needed.end(),c);
+    std::sort(vars_needed.begin(), vars_needed.end());
+    //c.finishup();
 
     #ifdef COL_ORDER_DEBUG_VERBOSE_DEBUG
     cout << "col order: " << endl;
