@@ -223,6 +223,7 @@ public:
     void enqueue_light(const Lit p);
     void new_decision_level();
     vector<Lit>* get_xor_reason(const PropBy& reason, int32_t& ID);
+    Xor* get_xor_reason_xorricane(const PropBy& reason, int32_t& ID);
 
     /////////////////////
     // Branching

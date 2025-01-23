@@ -270,6 +270,14 @@ public:
         PackedRow& tmp_col2,
         Lit prop
     );
+    void get_reason_xorricane(
+        Xor& tmp_clause,
+        const vector<lbool>& assigns,
+        const vector<uint32_t>& col_to_var,
+        PackedRow& cols_vals,
+        PackedRow& tmp_col2,
+        Lit prop
+    );
     void get_reason_xor(
         Xor& tmp_xor,
         [[maybe_unused]] const vector<lbool>& assigns,

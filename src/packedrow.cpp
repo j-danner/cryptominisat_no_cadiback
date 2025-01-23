@@ -133,7 +133,7 @@ void PackedRow::get_reason(
             const uint32_t var = col_to_var[col];
             if (var == prop.var()) {
                 tmp_clause.push_back(prop);
-                //std::swap(tmp_clause[0], tmp_clause.back());
+                std::swap(tmp_clause[0], tmp_clause.back());
             } else {
                 const bool val_bool = tmp_col2[col];
                 tmp_clause.push_back(Lit(var, val_bool));
@@ -150,6 +150,48 @@ void PackedRow::get_reason(
     #ifdef SLOW_DEBUG
     for(uint32_t i = 1; i < tmp_clause.size(); i++) {
         assert(assigns[tmp_clause[i].var()] != l_Undef);
+    }
+    #endif
+}
+void PackedRow::get_reason_xorricane(
+    Xor& tmp_clause,
+    [[maybe_unused]] const vector<lbool>& assigns,
+    const vector<uint32_t>& col_to_var,
+    PackedRow& cols_vals,
+    PackedRow& tmp_col2,
+    Lit prop
+) {
+    tmp_col2.set_and(*this, cols_vals);
+    for (int i = 0; i < size; i++) if (mp[i]) {
+        int64_t tmp = mp[i];
+        unsigned long at;
+        at = scan_fwd_64b(tmp);
+        int extra = 0;
+        while (at != 0) {
+            uint32_t col = extra + at-1 + i*64;
+            SLOW_DEBUG_DO(assert(this->operator[](col) == 1));
+            const uint32_t var = col_to_var[col];
+            bool sign = false;
+            if (var == prop.var()) {
+                tmp_clause.vars.push_back(prop.var());
+                tmp_clause.rhs ^= !prop.sign();
+            } else {
+                const bool val_bool = tmp_col2[col];
+                tmp_clause.vars.push_back(var);
+                tmp_clause.rhs ^= val_bool;
+            }
+
+            extra += at;
+            if (extra == 64) break;
+
+            tmp >>= at;
+            at = scan_fwd_64b(tmp);
+        }
+    }
+
+    #ifdef SLOW_DEBUG
+    for(uint32_t i = 1; i < tmp_clausevars..size(); i++) {
+        assert(assigns[tmp_clause.vars.[i]] != l_Undef);
     }
     #endif
 }

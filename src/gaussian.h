@@ -81,6 +81,8 @@ class EGaussian {
     );
 
     vector<Lit>* get_reason(const uint32_t row, int32_t& out_ID);
+    Xor tmpXor;
+    Xor* get_reason_xorricane(const uint32_t row, int32_t& out_ID);
 
     // when basic variable is touched , eliminate one col
     void eliminate_col(

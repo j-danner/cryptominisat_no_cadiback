@@ -1075,7 +1075,6 @@ void PropEngine::vmtf_bump_queue (const uint32_t var) {
     if (value(var) == l_Undef) vmtf_update_queue_unassigned(var);
 }
 
-
 vector<Lit>* PropEngine::get_xor_reason(const PropBy& reason, int32_t& ID) {
     frat_func_start();
     if (reason.get_matrix_num() == 1000) {
@@ -1141,5 +1140,23 @@ vector<Lit>* PropEngine::get_xor_reason(const PropBy& reason, int32_t& ID) {
         return gmatrices[reason.get_matrix_num()]->get_reason(reason.get_row_num(), ID);
         frat_func_end();
 
+    }
+}
+
+
+Xor* PropEngine::get_xor_reason_xorricane(const PropBy& reason, int32_t& ID) {
+    frat_func_start();
+    if (reason.get_matrix_num() == 1000) {
+        auto& x = xorclauses[reason.get_row_num()];
+        if (frat->enabled()) {
+            if (x.reason_cl_ID != 0) *frat << del << x.reason_cl_ID << x.reason_cl << fin;
+            x.reason_cl_ID = 0;
+        }
+        assert(std::is_sorted(x.begin(), x.end()));
+        return &x;
+    } else {
+        auto x = gmatrices[reason.get_matrix_num()]->get_reason_xorricane(reason.get_row_num(), ID);
+        assert(std::is_sorted(x->begin(), x->end()));
+        return x;
     }
 }

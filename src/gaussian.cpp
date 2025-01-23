@@ -464,6 +464,45 @@ vector<Lit>* EGaussian::get_reason(const uint32_t row, int32_t& out_ID) {
     return &tofill;
 }
 
+Xor* EGaussian::get_reason_xorricane(const uint32_t row, int32_t& out_ID) {
+    frat_func_start();
+    //if (!xor_reasons[row].must_recalc) {
+    //    out_ID = xor_reasons[row].ID;
+    //    return &(xor_reasons[row].reason);
+    //}
+
+    //// Clean up previous one
+    //if (solver->frat->enabled() && xor_reasons[row].ID != 0) {
+    //    *solver->frat << del << xor_reasons[row].ID << xor_reasons[row].reason << fin;
+    //}
+
+    vector<Lit>& tofill = xor_reasons[row].reason;
+    tmpXor.vars.clear();
+    tmpXor.rhs = false;
+
+    mat[row].get_reason_xorricane(
+        tmpXor,
+        solver->assigns,
+        col_to_var,
+        *cols_vals,
+        *tmp_col2,
+        xor_reasons[row].propagated);
+
+    if (solver->frat->enabled()) {
+        Xor reason = xor_reason_create(row);
+        out_ID = ++solver->clauseID;
+        assert(tofill.size() == reason.size());
+        *solver->frat << implyclfromx << out_ID << tofill << fratchain << reason.XID << fin;
+        *solver->frat << delx << reason << fin;
+        VERBOSE_PRINT("ID of asserted get_reason ID: " << out_ID);
+    }
+
+    xor_reasons[row].must_recalc = false;
+    xor_reasons[row].ID = out_ID;
+    frat_func_end();
+    return &tmpXor;
+}
+
 Xor EGaussian::xor_reason_create(const uint32_t row_n) {
     bool rhs = mat[row_n].rhs();
     assert(!(rhs == false && mat[row_n].popcnt() == 0)); // trivial clause not supported here
